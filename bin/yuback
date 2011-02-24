@@ -18,11 +18,11 @@ module Yuback
     def initialize
       begin
         # Start the logger
-        @logger = Yuback::Logger.new(
+        @logger = Yuback::Logger.new({
           :syslog => false,
           :logfile => false,
           :stdout => true,
-        )
+        })
         @logger.LOGLEVEL = "debug"
  
         # Define options

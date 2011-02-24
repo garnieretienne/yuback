@@ -29,10 +29,10 @@ module Yuback
     #   backup = Yuback::Backup.new(appli)
     #   backup.sources
     def sources
-      name = name_forge(
+      name = name_forge({
         :name => @application.name,
         :type => "sources",
-      )
+      })
       Archive.write_open_filename("#{name}.tar.bz2", Archive::COMPRESSION_BZIP2, Archive::FORMAT_TAR_USTAR) do |ar|
         Find.find(@application.path) do |path|
           if has_to_backup?(path)
@@ -77,11 +77,11 @@ module Yuback
         if database.type == "mysql" then # if mysql
           verify_mysqldump
           #TODO: replace system mysqldump by a more scalable method
-          name = name_forge(
+          name = name_forge({
             :name  => @application.name,
             :type  => "database",
             :label => database.name,
-          )
+          })
           system "mysqldump -h #{options[:mysql_server]} -P #{options[:mysql_port]} -u #{options[:mysql_user]} -p#{options[:mysql_pass]} #{database.name} | gzip > #{name}.sql.gz"
         #TODO: elsif another database
         end
@@ -93,11 +93,11 @@ module Yuback
     #   backup.sources
     def files_databases
       @application.files_databases.each do |fdb|
-        name = name_forge(
+        name = name_forge({
             :name  => @application.name,
             :type  => "folder",
             :label => fdb.name,
-          )
+          })
         Archive.write_open_filename("#{name}.tar.bz2", Archive::COMPRESSION_BZIP2, Archive::FORMAT_TAR_USTAR) do |ar|
         Find.find("#{@application.path}/#{fdb.folder}") do |path|
           ar.new_entry do |entry|

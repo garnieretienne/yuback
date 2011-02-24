@@ -14,15 +14,24 @@ Jeweler::Tasks.new do |gem|
   # gem is a Gem::Specification... see http://docs.rubygems.org/read/chapter/20 for more options
   gem.name = "yuback"
   gem.homepage = "http://github.com/garnieretienne/yuback"
-  gem.license = "MIT"
-  gem.summary = %Q{TODO: one-line summary of your gem}
-  gem.description = %Q{TODO: longer description of your gem}
+  gem.license = "GPLv3"
+  gem.summary = %Q{Another backup tool for web applications}
+  gem.description = %Q{
+    Yuback is backup tool for web applications.
+    It can backup an application fully or partially.
+    The configuration can deal with source code, cache folder, framework folder, databases and dynamic files folders.
+    The libraries can also be used independently in a ruby script.
+  }
   gem.email = "garnier.etienne@gmail.com"
   gem.authors = ["Etienne Garnier (kurt/yuweb)"]
-  # Include your dependencies below. Runtime dependencies are required when using your gem,
-  # and development dependencies are only needed for development (ie running rake tasks, tests, etc)
-  #  gem.add_runtime_dependency 'jabber4r', '> 0.1'
-  #  gem.add_development_dependency 'rspec', '> 1.2.3'
+
+  # Runtime dependencies
+  gem.add_development_dependency 'libarchive', '> 0'
+  # Development dependencies
+  gem.add_development_dependency "shoulda", ">= 0"
+  gem.add_development_dependency "bundler", "> 1.0.0"
+  gem.add_development_dependency "jeweler", "> 1.5.2"
+  gem.add_development_dependency "rcov", "> 0"
 end
 Jeweler::RubygemsDotOrgTasks.new
 
@@ -47,7 +56,7 @@ Rake::RDocTask.new do |rdoc|
   version = File.exist?('VERSION') ? File.read('VERSION') : ""
 
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "yuback #{version}"
+  rdoc.title = "test #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end

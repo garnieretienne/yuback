@@ -1,19 +1,74 @@
 = yuback
 
-Description goes here.
+* https://github.com/garnieretienne/yuback
 
-== Contributing to yuback
- 
-* Check out the latest master to make sure the feature hasn't been implemented or the bug hasn't been fixed yet
-* Check out the issue tracker to make sure someone already hasn't requested it and/or contributed it
-* Fork the project
-* Start a feature/bugfix branch
-* Commit and push until you are happy with your contribution
-* Make sure to add tests for it. This is important so I don't break it in a future version unintentionally.
-* Please try not to mess with the Rakefile, version, or history. If you want to have your own version, or is otherwise necessary, that is fine, but please isolate to its own commit so I can cherry-pick around it.
+== DESCRIPTION:
 
-== Copyright
+Yuback is a tool designed to backup web applications.
+It can backup an application fully or partially. 
+The configuration can deal with source code, cache folder, framework folder, databases and dynamic files folders.
 
-Copyright (c) 2011 Etienne Garnier (kurt/yuweb). See LICENSE.txt for
-further details.
+The libraries can also be used independently in a ruby script.
+
+== FEATURES/PROBLEMS:
+
+/!\ Yuback IS NOT READY FOR PRODUCTION !
+
+Features:
+  - Backup an application
+  - Backup only few componment of an application
+  - Support for framework folders exclusion
+  - Support for cache folders exclusion
+  - Support for several loglevels and destinations (stdout, syslog, logfile)
+
+TODO:
+  - Support the pool option (actually save backup in the current directory)
+  - Verify than each coposants of an application exist
+  - Deal with several databases servers
+  - Deal with several databases type (only MySQL is supported)
+  - Deal with several 'pools' (destination folder), support for SFTP and other remote protocols
+
+== SYNOPSIS:
+
+  Usage: yuback [options] profile
+   -h, --help                       Display this help
+   -c, --config CONFIG              Config file path, 
+                                      default /etc/yuback/yuback.conf
+   -p, --pool PATH                  Path to the pool
+   -b, --backup src,db,f            Backup only sources, databases or files  
+
+== REQUIREMENTS:
+
+* libarchive
+
+== INSTALL:
+
+* FIX (sudo gem install, anything else)
+
+== DEVELOPERS:
+
+After checking out the source, run:
+
+  $ rake newb
+
+This task will install any missing dependencies, run the tests/specs,
+and generate the RDoc.
+
+== LICENSE:
+
+Yuback - Another backup tool
+Copyright (C) 2011 Etienne Garnier <garnier.etienne@gmail.com>
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>
 

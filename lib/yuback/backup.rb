@@ -5,7 +5,7 @@
 #               Support sources, databases and files databases backup.
 #               Compress with bzip2 for files and gunzip for databases.
 
-require 'libarchive_ruby'
+require 'libarchive_rs'
 require 'find'
 
 module Yuback

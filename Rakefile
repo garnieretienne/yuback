@@ -26,7 +26,7 @@ Jeweler::Tasks.new do |gem|
   gem.authors = ["Etienne Garnier (kurt/yuweb)"]
 
   # Runtime dependencies
-  gem.add_development_dependency 'libarchive', '> 0'
+  gem.add_development_dependency 'libarchive-ruby-swig', '> 0'
   # Development dependencies
   gem.add_development_dependency "shoulda", ">= 0"
   gem.add_development_dependency "bundler", "> 1.0.0"

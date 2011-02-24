@@ -39,7 +39,12 @@ TODO:
 
 == REQUIREMENTS:
 
-* libarchive
+System:
+* libarchive-dev
+* swig
+
+Gems:
+* libarchive-ruby-swig
 
 == INSTALL:
 

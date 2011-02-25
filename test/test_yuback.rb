@@ -3,6 +3,7 @@ require "yuback/application"
 require "yuback/backup"
 require "tempfile"
 require 'fileutils'
+require 'libarchive_rs'
 
 class TestYuback < Test::Unit::TestCase
 
@@ -14,6 +15,12 @@ class TestYuback < Test::Unit::TestCase
     Dir.mkdir("#{@tmp}/css_framework_folder")
     Dir.mkdir("#{@tmp}/uploads")
     Dir.mkdir("#{@tmp}/sessions_dir")
+    # Add a symlink
+    @symlink_target = Dir.mktmpdir('symlink_target')
+    f = File.new("#{@symlink_target}/symlinks_works", "w")
+    f.write("blah")
+    f.close 
+    File.symlink(@symlink_target, "#{@tmp}/symlink")
     # Create fake application profile
     @profile = Tempfile.new("profile_test")
     @profile.write("config:\n")
@@ -82,17 +89,30 @@ class TestYuback < Test::Unit::TestCase
     backup.files_databases
     puts ":: Producted files:"
     filenames = Array.new
+    sources = String.new
     Dir.entries(tmp).each do |file|
       filenames << file if file != "." and file != ".."
     end
     filenames.each do |filename|
+      sources = filename if filename =~ /.*SRC*/
       puts "- #{filename}"
     end
+   
+    puts ":: Test the symlinks"
+    puts "- Source file: #{sources}"
+    Archive.read_open_filename(sources) do |archive|
+      while entry = archive.next_header
+        path = entry.pathname.sub(/^\//, '')
+        flunk "Symlinks not treated as folder" if path == "symlink" and !File.exist?("#{path}/symlinks_works")
+      end
+    end
+
     FileUtils.rm_rf(tmp)
   end
 
   def teardown
     FileUtils.rm_rf(@tmp)
+    FileUtils.rm_rf(@symlink_target)
     @profile.close
     @profile.unlink
   end

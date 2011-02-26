@@ -88,7 +88,7 @@ module Yuback
     def path_sub(path1, path2)
       a_path1 = path1.split('/')
       a_path2 = path2.split('/')
-      index_to_cut = a_path2.count - 1
+      index_to_cut = a_path2.count
       a_path1.slice!(0, index_to_cut)
       return a_path1.join('/')
     end

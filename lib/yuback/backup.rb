@@ -95,7 +95,7 @@ module Yuback
 
     # Backup dynamic files storage folders
     #   backup = Yuback::Backup.new(appli)
-    #   backup.sources
+    #   backup.files_databases
     def files_databases
       @application.files_databases.each do |fdb|
         name = name_forge({
@@ -109,7 +109,7 @@ module Yuback
             absolute_path = index.hash[relative_path]
             ar.new_entry do |entry|
               entry.copy_stat(absolute_path)
-              entry.pathname = relative_path
+              entry.pathname = "#{fdb.folder}/#{relative_path}"
               ar.write_header(entry)
               ar.write_data(open(absolute_path) {|f| f.read }) if !File.directory?(absolute_path)
             end

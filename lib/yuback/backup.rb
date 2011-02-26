@@ -7,6 +7,7 @@
 
 require 'libarchive_rs'
 require 'find'
+require 'yuback/index'
 
 module Yuback
   # Backup module for Yuweb (yuweb.fr)
@@ -23,6 +24,8 @@ module Yuback
       @application = application
       @dir = "./"
       @date = Time.now
+      @tmp_dir = "/tmp"
+      @pool_dir = Dir.pwd
     end
 
     # Backup sources
@@ -33,15 +36,17 @@ module Yuback
         :name => @application.name,
         :type => "sources",
       })
-      Archive.write_open_filename("#{name}.tar.bz2", Archive::COMPRESSION_BZIP2, Archive::FORMAT_TAR_USTAR) do |ar|
-        Find.find(@application.path) do |path|
-          if has_to_backup?(path)
+      Archive.write_open_filename("#{@pool_dir}/#{name}.tar.bz2", Archive::COMPRESSION_BZIP2, Archive::FORMAT_TAR_USTAR) do |ar|
+        # Build a hash with relative_path: absolute_path
+        index = Yuback::Index.new(@application.path, 10)
+        index.hash.keys.each do |relative_path|
+          absolute_path = index.hash[relative_path]
+          if has_to_backup?(relative_path)
             ar.new_entry do |entry|
-              entry.copy_stat(path)
-              newpath = path.split("/") - @application.path.split("/")
-              entry.pathname = newpath.join("/")
+              entry.copy_stat(absolute_path)
+              entry.pathname = relative_path
               ar.write_header(entry)
-              ar.write_data(open(path) {|f| f.read }) if !File.directory?(path)
+              ar.write_data(open(absolute_path) {|f| f.read }) if !File.directory?(absolute_path)
             end
           end
         end
@@ -94,22 +99,22 @@ module Yuback
     def files_databases
       @application.files_databases.each do |fdb|
         name = name_forge({
-            :name  => @application.name,
-            :type  => "folder",
-            :label => fdb.name,
-          })
-        Archive.write_open_filename("#{name}.tar.bz2", Archive::COMPRESSION_BZIP2, Archive::FORMAT_TAR_USTAR) do |ar|
-        Find.find("#{@application.path}/#{fdb.folder}") do |path|
-          ar.new_entry do |entry|
-            entry.copy_stat(path)
-            newpath = path.split("/") - @application.path.split("/")
-            entry.pathname = newpath.join("/")
-            ar.write_header(entry)
-            ar.write_data(open(path) {|f| f.read }) if !File.directory?(path)
+          :name  => @application.name,
+          :type  => "folder",
+          :label => fdb.name,
+        })
+        Archive.write_open_filename("#{@pool_dir}/#{name}.tar.bz2", Archive::COMPRESSION_BZIP2, Archive::FORMAT_TAR_USTAR) do |ar|
+          index = Yuback::Index.new("#{@application.path}/#{fdb.folder}", 10)
+          index.hash.keys.each do |relative_path|
+            absolute_path = index.hash[relative_path]
+            ar.new_entry do |entry|
+              entry.copy_stat(absolute_path)
+              entry.pathname = relative_path
+              ar.write_header(entry)
+              ar.write_data(open(absolute_path) {|f| f.read }) if !File.directory?(absolute_path)
+            end
           end
         end
-      end
-
       end
     end
 

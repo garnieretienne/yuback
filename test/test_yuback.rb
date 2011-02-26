@@ -15,6 +15,9 @@ class TestYuback < Test::Unit::TestCase
     Dir.mkdir("#{@tmp}/css_framework_folder")
     Dir.mkdir("#{@tmp}/uploads")
     Dir.mkdir("#{@tmp}/sessions_dir")
+    f = File.new("#{@tmp}/uploads/here", "w")
+    f.write("blahah")
+    f.close
     # Add a symlink
     @symlink_target = Dir.mktmpdir('symlink_target')
     f = File.new("#{@symlink_target}/symlinks_works", "w")
@@ -77,10 +80,10 @@ class TestYuback < Test::Unit::TestCase
   # Backup a web application (files and sources)
   def test_03_backup
     puts "\n\nTesting: Backup a web application (files and sources)"
-    puts "--------------------------------------------------"
+    puts "---------------------------------------------------------"
     puts ":: Create a backup from an application"
-    tmp = Dir.mktmpdir('backups')
-    Dir.chdir(tmp)
+    @tmp_back = Dir.mktmpdir('backups')
+    Dir.chdir(@tmp_back)
     appli = Yuback::Application.new(:profile => @profile.path)
     backup = Yuback::Backup.new(appli)
     puts ":: Backup sources"
@@ -90,27 +93,31 @@ class TestYuback < Test::Unit::TestCase
     puts ":: Producted files:"
     filenames = Array.new
     sources = String.new
-    Dir.entries(tmp).each do |file|
+    folder = String.new
+    Dir.entries(@tmp_back).each do |file|
       filenames << file if file != "." and file != ".."
     end
     filenames.each do |filename|
-      sources = filename if filename =~ /.*SRC*/
+      sources = filename if filename =~ /.*SRC.*/
+      folder = filename if filename =~ /.*FOLDER.*/
       puts "- #{filename}"
     end
+    flunk "Sources not backuped" if sources == ''
+    flunk "Dynamic folder not backuped" if folder == ''
    
     puts ":: Test the symlinks"
     puts "- Source file: #{sources}"
-    Archive.read_open_filename(sources) do |archive|
+    Archive.read_open_filename("#{@tmp_back}/#{sources}") do |archive|
       while entry = archive.next_header
         path = entry.pathname.sub(/^\//, '')
-        flunk "Symlinks not treated as folder" if path == "symlink" and !File.exist?("#{path}/symlinks_works")
+        flunk "Symlinks not treated as folder" if path == "symlink"
+        flunk "Symlinks contents are not backuped" if path == "symlink/" and !File.exist?("#{path}/symlinks_works")
       end
     end
-
-    FileUtils.rm_rf(tmp)
   end
 
   def teardown
+    FileUtils.rm_rf(@tmp_back) if @tmp_back
     FileUtils.rm_rf(@tmp)
     FileUtils.rm_rf(@symlink_target)
     @profile.close

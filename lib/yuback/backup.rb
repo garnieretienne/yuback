@@ -36,7 +36,7 @@ module Yuback
         :name => @application.name,
         :type => "sources",
       })
-      Archive.write_open_filename("#{@pool_dir}/#{name}.tar.bz2", Archive::COMPRESSION_BZIP2, Archive::FORMAT_TAR_USTAR) do |ar|
+      Archive.write_open_filename("#{@pool_dir}/#{name}", Archive::COMPRESSION_BZIP2, Archive::FORMAT_TAR_USTAR) do |ar|
         # Build a hash with relative_path: absolute_path
         index = Yuback::Index.new(@application.path, 10)
         index.hash.keys.each do |relative_path|
@@ -84,10 +84,10 @@ module Yuback
           #TODO: replace system mysqldump by a more scalable method
           name = name_forge({
             :name  => @application.name,
-            :type  => "database",
+            :type  => "mysql",
             :label => database.name,
           })
-          system "mysqldump -h #{options[:mysql_server]} -P #{options[:mysql_port]} -u #{options[:mysql_user]} -p#{options[:mysql_pass]} #{database.name} | gzip > #{name}.sql.gz"
+          system "mysqldump -h #{options[:mysql_server]} -P #{options[:mysql_port]} -u #{options[:mysql_user]} -p#{options[:mysql_pass]} #{database.name} | gzip > #{@pool_dir}/#{name}"
         #TODO: elsif another database
         end
       end
@@ -103,7 +103,7 @@ module Yuback
           :type  => "folder",
           :label => fdb.name,
         })
-        Archive.write_open_filename("#{@pool_dir}/#{name}.tar.bz2", Archive::COMPRESSION_BZIP2, Archive::FORMAT_TAR_USTAR) do |ar|
+        Archive.write_open_filename("#{@pool_dir}/#{name}", Archive::COMPRESSION_BZIP2, Archive::FORMAT_TAR_USTAR) do |ar|
           index = Yuback::Index.new("#{@application.path}/#{fdb.folder}", 10)
           index.hash.keys.each do |relative_path|
             absolute_path = index.hash[relative_path]
@@ -185,7 +185,7 @@ module Yuback
       if type == 'sources' then
         type = "SRC"
       elsif type == 'mysql' then
-        type = "DB.MySQL"
+        type = "DB-MySQL"
       elsif type == 'folder' then
         type = "FOLDER"
       end
@@ -195,7 +195,7 @@ module Yuback
       timestamp = @date.to_i
       # Backup extention
       ext = String.new
-      if type != "database" then
+      if type == "database" then
         ext = "sql.gz"
       else
         ext = "tar.bz2"

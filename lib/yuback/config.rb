@@ -41,7 +41,7 @@ module Yuback
     # Verify the owner and the security mode of the file. 
     # This file can contain sensitive informations and must authorize acces only in r+w for the owner.
     def verify
-      raise SecurityError, "#{@config_file} is not owned by the current user (#{`whoami`.chomp}:#{`whoami`.chomp})" if File.stat(@config_file).uid != Process.uid or File.stat(@config_file).gid != Process.gid
+      raise SecurityError, "#{@config_file} (#{File.stat(@config_file).uid}:#{File.stat(@config_file).gid}) is not owned by the current user (#{`whoami`.chomp}[#{Process.uid}]:#{`id -ng`.chomp}[#{Process.gid}])" if File.stat(@config_file).uid != Process.uid or File.stat(@config_file).gid != Process.gid
       raise SecurityError, "#{@config_file} is not secure (600)" if File.stat(@config_file).mode.to_s(8) != "100600"
     end
 

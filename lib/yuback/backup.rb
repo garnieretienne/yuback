@@ -195,10 +195,12 @@ module Yuback
       timestamp = @date.to_i
       # Backup extention
       ext = String.new
-      if type == "database" then
-        ext = "sql.gz"
-      else
+      if type == "sources" then
         ext = "tar.bz2"
+      elsif type == "folder" then
+        ext = "tar.bz2"
+      elsif type == "mysql" then
+        ext = "sql.gz"
       end
       # Return the filename
       return "#{name}-#{label}#{type}-#{date}-#{timestamp}.#{ext}"

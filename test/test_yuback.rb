@@ -9,6 +9,9 @@ class TestYuback < Test::Unit::TestCase
 
   # Create a fake application skeleton and a fake application profile
   def setup
+    if $orig.nil? then
+      $orig = File.expand_path(File.dirname(__FILE__))
+    end
     # Create fake application skel
     @tmp = Dir.mktmpdir('appli_test')
     Dir.mkdir("#{@tmp}/folder_framework")
@@ -114,6 +117,14 @@ class TestYuback < Test::Unit::TestCase
         flunk "Symlinks contents are not backuped" if path == "symlink/" and !File.exist?("#{path}/symlinks_works")
       end
     end
+  end
+
+  # Backup a web application (source only) using the binary
+  def test_04_binary
+    puts "\n\nBackup a web application (source only) using the binary"
+    puts "---------------------------------------------------------"
+    puts ":: Call the binary with a profile"
+    `#{$orig}/../bin/yuback #{@profile.path}`
   end
 
   def teardown
